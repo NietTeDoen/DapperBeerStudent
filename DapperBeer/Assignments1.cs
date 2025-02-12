@@ -49,11 +49,12 @@ public class Assignments1 : TestHelper
     // Geef een overzicht van alle bieren gesorteerd op alcohol percentage (hoog naar laag).
     public static List<Beer> GetAllBeersOrderByAlcohol()
     {
-        throw new NotImplementedException();
+        var connection = DbHelper.GetConnection();
+        return connection.Query<Beer>("SELECT * from beer order by Alcohol desc").ToList();
     }
     
     // 1.3 Question
-    // Geef een overzicht van ale bieren voor een bepaald land gesorteerd op naam (alfabetisch).
+    // Geef een overzicht van alle bieren voor een bepaald land gesorteerd op naam (alfabetisch).
     // Gebruik hiervoor de class Beer. En in je SQL-query JOIN met de tabel Brewer.
     // Gebruik de Query<Beer>(sql, new {Country = country}) methode van Dapper.
     // In je SQL-query kan je de WHERE-clause gebruiken om te filteren op land.
@@ -63,7 +64,8 @@ public class Assignments1 : TestHelper
     // @Country is een query parameter placeholder.
     public static List<Beer> GetAllBeersSortedByNameForCountry(string country)
     {
-        throw new NotImplementedException();
+        var connection = DbHelper.GetConnection();
+        return connection.Query<Beer>("select * from beer inner join brewer on beer.BrewerId=brewer.BrewerId where brewer.Country = @country",new {country} ).ToList();
     }
     
     // 1.4 Question
@@ -73,7 +75,8 @@ public class Assignments1 : TestHelper
     // Voor deze vraag kijken specifiek naar deze pagina: https://www.learndapper.com/dapper-query
     public static int CountBrewers()
     {
-        throw new NotImplementedException();
+        var connection = DbHelper.GetConnection();
+        return connection.QueryFirst<int>("select count(*) from brewer");
     }
     
     // 1.5 Question
@@ -86,7 +89,8 @@ public class Assignments1 : TestHelper
     // voor Queries die net overeenkomen met de database tabellen.
     public static List<NumberOfBrewersByCountry> NumberOfBrewersByCountry()
     {
-        throw new NotImplementedException();
+        var connection = DbHelper.GetConnection();
+        return connection.Query<NumberOfBrewersByCountry>("select Country, count(Country) as NumberOfBreweries from brewer group by Country order by Count(Country) desc").ToList();
     }
     
     // 1.6 Question
@@ -94,7 +98,9 @@ public class Assignments1 : TestHelper
     // Je kan in MySQL de LIMIT 1 gebruiken om 1 record terug te krijgen.
     public static Beer GetBeerWithMostAlcohol()
     {
-        throw new NotImplementedException();
+        var connection = DbHelper.GetConnection();
+        var test = connection.QueryFirst<Beer>("select * from beer order by Alcohol desc");
+        return test;
     }
     
     // 1.7 Question
@@ -104,15 +110,20 @@ public class Assignments1 : TestHelper
     // indien de brouwerij niet bestaat voor een bepaalde brewerId.
     public static Brewer? GetBreweryByBrewerId(int brewerId)
     {
-        throw new NotImplementedException();
+        var connection = DbHelper.GetConnection();
+        
+        var test =  connection.QueryFirst<Brewer>("select * from brewer where brewer.BrewerId = @brewerId",
+            new { brewerId });
+        return test;
     }
     
     // 1.8 Question
     // Gegeven de BrewerId, geef een overzicht van alle bieren van de brouwerij gesorteerd bij alcohol percentage.
     public static List<Beer> GetAllBeersByBreweryId(int brewerId)
     {
-        throw new NotImplementedException();
-    }
+        var connection = DbHelper.GetConnection();
+        return connection.Query<Beer>("select * from beer where beer.BrewerId = @brewerId order by Alcohol", new { brewerId }).ToList();
+    } 
     
     // 1.9 Question
     // Geef per cafe aan welke bieren ze schenken, sorteer op cafe naam en daarna bier naam.
